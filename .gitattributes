@@ -1,0 +1,17 @@
+# 统一行尾，避免 Windows / Linux 克隆后 diff 全是换行符差异
+* text=auto
+
+# 批处理必须是 CRLF，否则 cmd 解析 :label / goto 可能出错
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh  text eol=lf
+
+# 二进制：不要做任何换行或编码转换
+*.onnx  binary
+*.pt    binary
+*.pth   binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.docx  binary
+*.zip   binary

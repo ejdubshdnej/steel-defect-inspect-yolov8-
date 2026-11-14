@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# 本地数据与生成的配置/缓存（不入库）
+data/*
+!data/.gitkeep
+yolo_cfg/
+mpl_cfg/
+tests/synth/ds/
+
+# 训练与导出产物
+runs/**/weights/
+*.pt
+!runs/detect/train/results.csv
+
+# 模型权重不入库。12 MB 级的二进制会把仓库撑大，也不方便按版本替换。
+# 导出方法见 docs/DEPLOY_NOTES.md；预导出的 ONNX 放在 GitHub Releases。
+exports/*.onnx
+exports/*.onnx.part
+*.onnx.data
+
+# 日志与临时文件
+*.log
+*.tmp
+
+# 本地自检脚本（个人工作流，不属于项目内容）
+check_publish.sh
+
+# 编辑器与操作系统
+.idea/
+.vscode/
+.ipynb_checkpoints/
+.pytest_cache/
+.DS_Store
+Thumbs.db

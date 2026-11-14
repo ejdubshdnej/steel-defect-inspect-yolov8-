@@ -1,0 +1,66 @@
+# 训练 / 评测 / 导出依赖。包含 requirements.txt 的全部内容。
+#
+# 适用入口：
+#   python train.py --data ...            训练
+#   python scripts/eval.py                验证集评测
+#   python export_onnx.py                 .pt -> .onnx（FP32 / FP16）
+#   python verify_onnx.py                 结构与输出一致性校验
+#   python scripts/check_labels.py        标注质检（越界框 / 微小框 / 重复图）
+#
+# 版本说明：下界取自本项目实测环境（torch 2.14.1+cu130、ultralytics 8.4.211、
+# onnx 1.23.2）。训练环境与部署环境可以完全分离：工控机上只需要
+# requirements.txt，不必装这里的任何一项。
+#
+# 安装：pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# 注意 opencv 的两个发行版：ultralytics 声明依赖 opencv-python（非 headless），
+# 而 requirements.txt 装的是 headless 版。两者都提供 cv2，同一环境里同时存在会互相覆盖。
+# 训练机如果遇到 import cv2 异常，先 pip uninstall opencv-python-headless 再重装
+# opencv-python，保证环境里只留一份。
+
+# 训练与导出的底座。export_onnx.py 的 half=True（FP16 导出）依赖 torch 的
+# half 路径，缺 torch 时 ultralytics 直接不可用。
+# CUDA 12 的轮子不在 PyPI，需按平台改用官方源，例如：
+#   pip install torch>=2.14.1 torchvision --index-url https://download.pytorch.org/whl/cu130
+# 没有 GPU 的机器去掉 --index-url 装 CPU 版即可（只能跑导出校验，训不动）。
+torch>=2.14.1
+
+# torch 的配套视觉库，ultralytics 的预处理与导出依赖它。
+# torchvision 与 torch 的版本必须成对（本项目实测组合为 torch 2.14.1 + torchvision 0.29.1），
+# 因此这里不写死版本，交给 pip 按 torch 自行解析配对版本。
+torchvision
+
+# 训练 / 评测 / 导出 / 权重加载的唯一入口（train.py、scripts/eval.py、
+# export_onnx.py、verify_onnx.py 均 from ultralytics import YOLO）。
+# 注意：Ultralytics 为 AGPL-3.0，衍生物的使用边界见 NOTICE。
+ultralytics>=8.4.211
+
+# ONNX 文件的结构检查：verify_onnx.py 用 onnx.load / onnx.TensorProto 读
+# ir_version、opset、输入输出 shape。ONNX 导出本身由 ultralytics 完成。
+onnx>=1.23.2
+
+# 注意：不要加 onnxsim / onnx-simplifier。export_onnx.py 显式传 simplify=False，
+# 该优化在本项目的导出环境上不可用。
+
+# 数据集配置解析：仓库里的 data.yaml（含 tests/synth/data.yaml）由 ultralytics
+# 读取，pyyaml 是它的解析依赖；脚本本身不直接 import yaml。
+pyyaml
+
+# 标注质检的重复图检测：scripts/check_labels.py 用 imagehash.phash 计算感知哈希，
+# 用 PIL.Image.open 读图尺寸（img_size）。
+imagehash
+Pillow
+
+# 绘图：train.py / scripts/eval.py 设置 MPLCONFIGDIR 缓存 matplotlib 配置目录，
+# 训练曲线与混淆矩阵（plots=True）由 ultralytics 内部调用 matplotlib 生成。
+matplotlib
+
+# 上位机图形界面：hmi/app.py 与 hmi/_shot.py 依赖 PyQt6。
+# 无图形界面的服务器不需要装，跳过这一行不影响训练/服务/基准测试。
+PyQt6
+
+# 可选：仅 scripts/md2docx.py（把 Markdown 技术报告转成 DOCX）需要。
+# 不参与训练、评测或服务，默认不装；需要时手动 pip install python-docx。
+# python-docx

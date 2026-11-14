@@ -1,0 +1,19 @@
+# 合成测试数据集配置，仅用于冒烟测试训练管线能否端到端跑通。
+#
+# 数据本身不入库（见 .gitignore 的 tests/synth/ds/），也不随仓库分发：
+# 当前工作副本里是 64 张 200x200 的合成小图（train 48 / val 16），
+# 只覆盖 train/val 两条路径与产物落盘，指标没有意义。
+# 需要复现时按同样的目录结构自备少量小图：
+#   ds/images/{train,val}/*.jpg
+#   ds/labels/{train,val}/*.txt   （YOLO 格式，class cx cy w h，均归一化）
+#
+# path 用相对写法，指向 tests/synth/ds。
+# 注意：Ultralytics 解析相对 path 时以当前工作目录为准；当前目录下找不到时，
+# 会退回到它的全局数据集目录（DATASETS_DIR），而不是本文件所在目录。
+# 因此要么在 tests/synth/ 下运行，要么把下面一行改成绝对路径，例如
+#   path: <repo-root>/tests/synth/ds
+path: ds
+train: images/train
+val: images/val
+nc: 2
+names: [crazing, inclusion]

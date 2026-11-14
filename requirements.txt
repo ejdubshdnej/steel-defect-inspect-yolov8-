@@ -1,0 +1,35 @@
+# 推理 / 服务端运行依赖（纯 CPU 部署即可，不需要 CUDA，也不需要 PyTorch）。
+#
+# 适用入口：
+#   python serve/main.py     FastAPI 服务（POST /predict）
+#   python hmi/app.py        PyQt6 上位机（额外需要 PyQt6，见 requirements-dev.txt）
+#   python bench/latency.py  延迟基准
+#
+# 版本说明：下界取自本项目实测环境（onnxruntime 1.31.1、opencv 5.0.0），
+# 用 >= 而非 == ，避免把小版本钉死。未记录版本的包不加约束。
+#
+# 安装：pip install -r requirements.txt
+
+# 推理引擎：serve/infer.py 用 onnxruntime.InferenceSession(CPUExecutionProvider)。
+# 用 CPU 版，不要装 onnxruntime-gpu。
+onnxruntime>=1.31.1
+
+# 数值计算：预处理/后处理全程 numpy（letterbox、坐标反变换、NMS 前筛选）。
+# 未固定版本，下界由 onnxruntime 与 opencv 各自的依赖声明给出。
+numpy
+
+# 图像解码与缩放：serve/main.py 用 cv2.imdecode，serve/infer.py 用 cv2.resize /
+# cv2.cvtColor / cv2.dnn.NMSBoxes。服务端无 GUI，用 headless 版可省掉图形界面依赖；
+# 如果部署机上还要跑上位机或调试窗口，换成 opencv-python 也能满足同一 import cv2。
+opencv-python-headless>=5.0.0
+
+# Web 服务框架：serve/main.py 的 FastAPI 应用与 JSONResponse。
+fastapi
+
+# ASGI 服务器：serve/main.py 结尾 uvicorn.run(app, host="127.0.0.1", port=DSI_PORT)。
+# [standard] 带上 httptools/uvloop 等可选加速组件。
+uvicorn[standard]
+
+# multipart 表单解析：/predict 的参数是 UploadFile = File(...)，
+# 缺这个包 FastAPI 处理上传时会直接报错。
+python-multipart

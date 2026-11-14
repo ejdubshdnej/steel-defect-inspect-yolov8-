@@ -1,0 +1,4 @@
+split,imgs,boxes,oob,tiny,nolabel,empty,badcls,badfmt
+train,1840,2848,0,0,0,7,0,0
+valid,230,349,0,0,0,0,0,0
+test,230,366,0,0,0,1,0,0

@@ -1,0 +1,90 @@
+steel-defect-inspect — Third-Party Notices
+==================================================================
+
+This file summarizes the licenses and attribution obligations that apply to
+this repository in addition to its own MIT license (see LICENSE). It is a
+factual summary, not legal advice; consult the upstream projects and, where
+commercial use is intended, your own counsel.
+
+------------------------------------------------------------------
+1. This repository (MIT)
+------------------------------------------------------------------
+
+Source code and documentation authored for this project are released under
+the MIT license. See LICENSE.
+
+This covers, among other things: train.py, export_onnx.py, verify_onnx.py,
+shim.py, serve/, hmi/, scripts/, bench/, launch_hmi.bat, and all Markdown
+documentation.
+
+------------------------------------------------------------------
+2. Ultralytics YOLOv8 (AGPL-3.0)
+------------------------------------------------------------------
+
+This project trains a YOLOv8n checkpoint with the Ultralytics package and
+exports it to ONNX.
+
+  Upstream project : https://github.com/ultralytics/ultralytics
+  Upstream license : GNU Affero General Public License v3.0 (AGPL-3.0)
+  License text     : https://www.gnu.org/licenses/agpl-3.0.html
+  Commercial terms : https://www.ultralytics.com/license
+
+Scope of the obligation:
+
+The following artifacts are derived from Ultralytics YOLOv8 and are therefore
+distributed under AGPL-3.0, NOT under this repository's MIT license:
+
+  - runs/detect/**/weights/*.pt        (trained PyTorch checkpoints)
+  - exports/*.onnx                     (exported ONNX graphs)
+  - any re-export or fine-tune of the above
+
+What this means in practice:
+
+  - If you use these model artifacts, or a network service built on them, in
+    a context where AGPL-3.0 applies, the AGPL's source-availability
+    obligations extend to the corresponding model and to the software that
+    serves it over a network. Read AGPL-3.0 section 13 in particular.
+  - Deploying the artifacts commercially in a closed-source product generally
+    requires a separate commercial license from Ultralytics. The MIT license
+    on this repository's code does not grant that.
+  - The MIT license on this repository's own code does not, and cannot,
+    relicense the Ultralytics-derived model artifacts.
+
+If you only want this repository's code (training wrappers, ONNX inference
+runtime, FastAPI service, PyQt6 HMI), and you supply your own model trained
+under terms you control, the MIT license applies to that code.
+
+------------------------------------------------------------------
+3. GC10-DET dataset (original authors)
+------------------------------------------------------------------
+
+The model in this repository was trained on GC10-DET, a public steel surface
+defect dataset.
+
+  Dataset          : GC10-DET (NEU surface defect database derivative,
+                     GC10-DET release)
+  Referenced from  : https://huggingface.co/datasets/dronefreak/GC10-DET
+  Retrieved by     : scripts/download_gc10.py
+
+This repository does NOT redistribute the dataset. The `data/` directory is
+excluded via .gitignore, and no images or labels from GC10-DET are committed
+to this repository. Only a download script and a YAML template are provided.
+
+All rights in the dataset remain with its original authors. If you use the
+dataset, cite the original publication and comply with its terms. The class
+names, split sizes, and label statistics reported in docs/EVAL.md and
+docs/DEVELOPMENT_LOG.md are descriptive measurements of that dataset, not a
+redistribution of it.
+
+------------------------------------------------------------------
+4. Other dependencies
+------------------------------------------------------------------
+
+Runtime and development dependencies (onnxruntime, OpenCV, FastAPI, NumPy,
+PyTorch, PyQt6, and others) carry their own licenses. They are consumed as
+installed packages and are not vendored into this repository. See
+requirements.txt and requirements-dev.txt for the dependency list, and consult
+each project's license before redistribution.
+
+PyQt6 in particular is offered by Riverbank Computing under the GNU GPL v3 and
+a separate commercial license; the choice between them is the deployer's.
